@@ -3,7 +3,8 @@ from discord.ext import commands
 from discord_components import *
 from pymongo import MongoClient
 import os
-
+import keep_alive
+keep_alive.keep_alive()
 client = commands.Bot(command_prefix = "!", intents = discord.Intents(messages = True, guild_messages = True, members = True, guilds = True))
 cluster = MongoClient("mongodb+srv://Jaxee:zB3DV6wTS24m6MH@cluster0.2pfpp.mongodb.net/bebra?retryWrites=true&w=majority")
 collection = cluster.bebra.bebra_coll
