@@ -9,10 +9,10 @@ import random
 3. LVL-System
 """
 
-class Economic(commands.Cog):
+class Экономика(commands.Cog):
 
-	def __init__(self, client):
-		self.client = client
+	def __init__(self, bot):
+		self.bot = bot
 		self.cluster = MongoClient("mongodb+srv://Jaxee:zB3DV6wTS24m6MH@cluster0.2pfpp.mongodb.net/bebra?retryWrites=true&w=majority")
 		self.collection = self.cluster.bebra.bebra_coll
 
@@ -50,8 +50,8 @@ class Economic(commands.Cog):
 	@commands.command(
 		name = "баланс",
 		aliases = ["balance", "cash"],
-		brief = "Вывод баланса пользователя",
-		usage = "balance <@user>"
+		description = "Вывод баланса пользователя",
+		case_insensitive=True
 	)
 	async def user_balance(self, ctx, member: discord.Member = None):
 		if member is None:
@@ -66,8 +66,8 @@ class Economic(commands.Cog):
 	@commands.command(
 		name = "уровень",
 		aliases = ["lvl"],
-		brief = "Вывод уровня пользователя",
-		usage = "lvl <@user>"
+		description = "Вывод уровня пользователя",
+		case_insensitive=True
 	)
 	async def user_lvl(self, ctx, member: discord.Member = None):
 		if member is None:
@@ -83,8 +83,8 @@ class Economic(commands.Cog):
 	@commands.command(
 		name = "перевод",
 		aliases = ["pay", "givecash"],
-		brief = "Перевод монет другому пользователю",
-		usage = "pay <@user> <amount>"	
+		description = "Перевод монет другому пользователю",
+		case_insensitive=True	
 	)
 	async def pay_cash(self, ctx, member: discord.Member, amount: int):
 		ubalance = self.collection.find_one({"_id": ctx.author.id})["balance"]
@@ -106,8 +106,8 @@ class Economic(commands.Cog):
 	@commands.command(
 		name = "пополнить",
 		aliases = ["donate"],
-		brief = "Пополнить монеты",
-		usage = "donate <@user> <amount>"	
+		description = "Пополнить монеты",
+		case_insensitive=True	
 	)
 	@commands.has_permissions(view_audit_log=True)
 	async def donate_cash(self, ctx, member: discord.Member, amount: int):
@@ -127,8 +127,8 @@ class Economic(commands.Cog):
 	@commands.command(
 		name = "снять",
 		aliases = ["undonate"],
-		brief = "Снять монеты",
-		usage = "undonate <@user> <amount>"	
+		description = "Снять монеты",
+		case_insensitive=True	
 	)
 	@commands.has_permissions(view_audit_log=True)
 	async def undonate_cash(self, ctx, member: discord.Member, amount: int):
@@ -145,5 +145,5 @@ class Economic(commands.Cog):
 
 			await ctx.message.add_reaction("✅")
 
-def setup(client):
-	client.add_cog(Economic(client))
+def setup(bot):
+	bot.add_cog(Экономика(bot))

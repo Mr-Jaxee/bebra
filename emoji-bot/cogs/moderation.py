@@ -4,28 +4,25 @@ import asyncio
 command = commands.command
 
 
-class Модерация(commands.Cog):
+class moderation(commands.Cog):
 
-	def __init__(self, bot):
-		self.bot = bot
+	def __init__(self, client):
+		self.client = client
 	
 	@command()
 	@commands.has_permissions(view_audit_log=True)
-	async def кик(self,ctx,member:discord.Member,reason=None):
-		channel = self.bot.get_channel(918112036129476628)
+	async def кик(self,ctx,member:discord.Member,reason):
+		channel = self.client.get_channel(918112036129476628)
 		emb = discord.Embed(title="Кик")
 		emb.add_field(name='Модератор',value=ctx.message.author.mention,inline=False)
 		emb.add_field(name='Нарушитель',value=member.mention,inline=False)
-		if reason != None:
-			emb.add_field(name='Причина',value=reason,inline=False)
-		if reason == None:
-			emb.add_field(name='Причина',value=reason,inline=False)
+		emb.add_field(name='Причина',value=reason,inline=False)
 		await member.kick()
 		await channel.send(embed = emb)
 	@command()
 	@commands.has_permissions(view_audit_log=True)
 	async def бан(self,ctx,member:discord.Member,reason):
-		channel = self.bot.get_channel(918112036129476628)
+		channel = self.client.get_channel(918112036129476628)
 		emb = discord.Embed(title="Бан")
 		emb.add_field(name='Модератор',value=ctx.message.author.mention,inline=False)
 		emb.add_field(name='Нарушитель',value=member.mention,inline=False)
@@ -40,7 +37,7 @@ class Модерация(commands.Cog):
 	@command()
 	async def репорт(self, ctx, *, message: str):
 		await ctx.send("Ваше сообщение отправлено модераторам сервера")
-		channel = self.bot.get_channel(918112036129476628)
+		channel = self.client.get_channel(918112036129476628)
 		if channel:
 			await channel.send("{} репортнул : {}".format(ctx.message.author.mention, message))
 
@@ -48,7 +45,7 @@ class Модерация(commands.Cog):
 	@commands.has_permissions(view_audit_log=True)
 	async def мут(self, ctx,member:discord.Member,time:int,reason):
 		role = discord.utils.get(ctx.guild.roles,id=905840970808053782)
-		channel = self.bot.get_channel(918112036129476628)
+		channel = self.client.get_channel(918112036129476628)
 		await member.add_roles(role)
 		emb = discord.Embed(title="Мут",color=0x2f3136)
 		emb.add_field(name='Модератор',value=ctx.message.author.mention,inline=False)
@@ -66,7 +63,7 @@ class Модерация(commands.Cog):
 	@command()
 	@commands.has_permissions(view_audit_log=True)
 	async def размут(self, ctx,member:discord.Member):
-		channel = self.bot.get_channel(918112036129476628)
+		channel = self.client.get_channel(918112036129476628)
 		muterole = discord.utils.get(ctx.guild.roles,id=905840970808053782)
 		emb = discord.Embed(title="Анмут",color=0xff0000)
 		emb.add_field(name='Модератор',value=ctx.message.author.mention,inline=False)
@@ -79,5 +76,9 @@ class Модерация(commands.Cog):
 		emb = discord.Embed(description=text)
 		await ctx.send(embed = emb)
 
-def setup(bot):
-	bot.add_cog(Модерация(bot))
+	@command()
+	async def help(self, ctx):
+		pass
+
+def setup(client):
+	client.add_cog(moderation(client))

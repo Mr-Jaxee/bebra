@@ -3,21 +3,21 @@ from discord.ext import commands
 from discord_components import *
 from pymongo import MongoClient
 import os
-
-bot = commands.Bot(command_prefix = "!", intents = discord.Intents(messages = True, guild_messages = True, members = True, guilds = True))
+import keep_alive
+keep_alive.keep_alive()
+client = commands.Bot(command_prefix = "!", intents = discord.Intents(messages = True, guild_messages = True, members = True, guilds = True))
 cluster = MongoClient("mongodb+srv://Jaxee:zB3DV6wTS24m6MH@cluster0.2pfpp.mongodb.net/bebra?retryWrites=true&w=majority")
 collection = cluster.bebra.bebra_coll
-bot.remove_command('help')
+client.remove_command('help')
 
-
-@bot.event
+@client.event
 async def on_ready():
 	print("Bot connected to the server")
-	DiscordComponents(bot)
+	DiscordComponents(client)
 	while True:
-		  await bot.change_presence( status=discord.Status.online, activity=discord.Game( "Нюхает бебру" ) )
+		  await client.change_presence( status=discord.Status.online, activity=discord.Game( "Нюхает бебру" ) )
 	
-	for guild in bot.guilds:
+	for guild in client.guilds:
 		for member in guild.members:
 			post = {
 				"_id": member.id,
@@ -29,7 +29,8 @@ async def on_ready():
 			if collection.count_documents({"_id": member.id}) == 0:
 				collection.insert_one(post)
 
-@bot.event
+
+@client.event
 async def on_member_join(member):
 	post = {
 		"_id": member.id,
@@ -42,7 +43,7 @@ async def on_member_join(member):
 		collection.insert_one(post)
 
 
-@bot.event
+@client.event
 async def on_command_error(ctx, error):
 	print(error)	
 
@@ -50,10 +51,27 @@ async def on_command_error(ctx, error):
 		await ctx.send(embed = discord.Embed(
 			description = f"Правильное использование команды: `{ctx.prefix}{ctx.command.name}` ({ctx.command.brief}): `{ctx.prefix}{ctx.command.usage}`"
 		))
+		
+@client.command()
+async def load(ctx, extension):
+	client.load_extension(f"cogs.{extension}")
+	await ctx.send("cogs is load...")
+
+@client.command()
+async def unload(ctx, extension):
+	client.unload_extension(f"cogs.{extension}")
+	await ctx.send("cogs is unload...")
+
+@client.command()
+async def reload(ctx, extension):
+	client.unload_extension(f"cogs.{extension}")
+	client.load_extension(f"cogs.{extension}")
+	await ctx.send("cogs is reload...")
+
 
 for filename in os.listdir("./cogs"):
 	if filename.endswith(".py"):
-		bot.load_extension(f"cogs.{filename[:-3]}")
+		client.load_extension(f"cogs.{filename[:-3]}")
 
 
-bot.run("OTE4MTA1NzI2MTk3NTgzODcy.YbCalg.CuueMPsehi1_8vwy1J5VkjaTbog")
+client.run("OTE4MTA1NzI2MTk3NTgzODcy.YbCalg.5ZM1574_Kz9pDGLxjuNXcleviBM")
